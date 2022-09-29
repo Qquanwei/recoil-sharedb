@@ -1,0 +1,41 @@
+{
+  "name": "recoil-sharedb",
+  "version": "0.0.1",
+  "description": "recoil sharedb",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Qquanwei/recoil-sharedb.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Qquanwei/recoil-sharedb/issues"
+  },
+  "homepage": "https://github.com/Qquanwei/recoil-sharedb#readme",
+  "peerDependencies": {
+    "@types/react": "^18.0.21",
+    "@types/recoil": "^0.0.9",
+    "@types/sharedb": "^3.2.0",
+    "react": "^18.2.0",
+    "recoil": "^0.7.5",
+    "recoil-sync": "^0.1.1",
+    "sharedb": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.21",
+    "@types/recoil": "^0.0.9",
+    "@types/sharedb": "^3.2.0",
+    "react": "^18.2.0",
+    "recoil": "^0.7.5",
+    "recoil-sync": "^0.1.1",
+    "sharedb": "^3.2.0"
+  },
+  "dependencies": {
+    "reconnecting-websocket": "^4.4.0"
+  }
+}

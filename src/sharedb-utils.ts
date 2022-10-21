@@ -2,12 +2,13 @@ import { Doc } from 'sharedb/lib/client';
 import * as json1 from 'ot-json1';
 import config from './config';
 
-export function readAndSubscribe(doc: Doc) {
+export function readDoc(doc: Doc) {
     if (doc.type) {
         return doc.data;
     }
     return new Promise((resolve, reject) => {
-        doc.subscribe((error: any) => {
+        doc.fetch((error: any) => {
+            console.log('subscribe 出现了', error, doc);
             if (error) {
                 reject(error);
             } else {
@@ -30,7 +31,9 @@ export function writeOrCreate<T>(doc: Doc, value: T) {
                 }));
             });
         } else {
-            doc.submitOp(json1.replaceOp([], true, value));
+            if (value !== doc.data) {
+                doc.submitOp(json1.replaceOp([], true, value));
+            }
         }
     });
 }

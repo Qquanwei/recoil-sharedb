@@ -17,23 +17,40 @@ Client.types.register(json1.type);
 interface IRecoilSyncShareDBProps {
     wsUrl: string;
     children: JSX.Element;
+    onError: (e: any) => void;
 };
 
 export const Context = React.createContext({});
 
 const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
     children,
-    wsUrl
+    wsUrl,
+    onError
 }, forwardRef) => {
     const connectionRef = useRef<Connection|null>(null);
     const updateItemRef = useRef(null);
     const updateAllKnownItemsRef = useRef(null);
     const isTimeRef = useRef(false);
+    const atomKeyMap = useMemo(() => {
+        return new Map();
+    }, []);
 
     const listenNewDoc = useCallback((doc: Doc) => {
-        doc.on('op', () => {
-            console.log('doc op', doc.data.id);
-        })
+        doc.subscribe();
+        doc.on('op', (op) => {
+            const k = atomKeyMap.get(`${doc.collection}.${doc.id}`);
+            if (updateItemRef.current && k) {
+                (updateItemRef.current as any)(k, doc.data);
+            }
+        });
+
+        doc.on('error', (e) => {
+            if (onError) {
+                onError(e);
+            } else {
+                console.error(e);
+            }
+        });
     }, []);
 
     const defCon = useMemo(() => {
@@ -45,7 +62,6 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
 
         socket.addEventListener('open', () => {
             connectionRef.current = new Connection(socket);
-            connectionRef.current.on('doc', listenNewDoc);
             defCon.resolve(connectionRef.current);
         });
 
@@ -63,9 +79,11 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
 
     const read = useCallback((itemKey: string) => {
         const { collection, key, ...props } = parseItemKey(itemKey);
+        atomKeyMap.set(`${collection}.${key}`, itemKey);
 
         const readWork = (con: Connection) => {
             const doc = con.get(collection, key);
+            listenNewDoc(doc);
             return readDoc(doc);
         }
 

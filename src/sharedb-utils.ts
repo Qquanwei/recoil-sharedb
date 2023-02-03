@@ -2,6 +2,8 @@ import { Doc } from 'sharedb/lib/client';
 import * as json1 from 'ot-json1';
 import config from './config';
 
+const liveDocs = new Map();
+
 export function readDoc(doc: Doc) {
     if (doc.type) {
         return doc.data;
@@ -11,6 +13,7 @@ export function readDoc(doc: Doc) {
             if (error) {
                 reject(error);
             } else {
+                liveDocs.set(doc, true);
                 resolve(doc.data || []);
             }
         });
@@ -18,10 +21,12 @@ export function readDoc(doc: Doc) {
 }
 
 export function writeOrCreate<T>(doc: Doc, value: T) {
-    if (!doc.type) {
+    if (!doc.type && !liveDocs.get(doc)) {
         doc.create(value, config.otName, ((error: any) => {
             if (error) {
                 console.error('->', error);
+            } else {
+                liveDocs.set(doc, true);
             }
         }));
     } else {

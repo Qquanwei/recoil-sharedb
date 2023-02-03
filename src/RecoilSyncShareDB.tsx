@@ -25,15 +25,19 @@ export const Context = React.createContext({});
 const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
     children,
     wsUrl,
-    onError
+    onError,
+    ...mapProps
 }, forwardRef) => {
     const connectionRef = useRef<Connection|null>(null);
     const updateItemRef = useRef(null);
     const updateAllKnownItemsRef = useRef(null);
     const isTimeRef = useRef(false);
+    const onErrorRef = useRef<Function|null>(null);
     const atomKeyMap = useMemo(() => {
         return new Map();
     }, []);
+
+    onErrorRef.current = onError;
 
     const listenNewDoc = useCallback((doc: Doc) => {
         doc.subscribe();
@@ -45,8 +49,8 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
         });
 
         doc.on('error', (e) => {
-            if (onError) {
-                onError(e);
+            if (onErrorRef.current) {
+                onErrorRef.current(e);
             } else {
                 console.error(e);
             }
@@ -78,7 +82,7 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
     }, []);
 
     const read = useCallback((itemKey: string) => {
-        const { collection, key, ...props } = parseItemKey(itemKey);
+        const { collection, key, ...props } = parseItemKey(itemKey, mapProps);
         atomKeyMap.set(`${collection}.${key}`, itemKey);
 
         const readWork = (con: Connection) => {
@@ -92,7 +96,7 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
         }
 
         return Promise.resolve(defCon.promise).then(readWork);
-    }, []);
+    }, [mapProps]);
 
     const write = useCallback(({ diff }: any) => {
         if (!isTimeRef.current) {
@@ -101,7 +105,7 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
 
         function doWork(con: Connection) {
             for (const [itemKey, value] of diff) {
-                const { collection, key } = parseItemKey(itemKey);
+                const { collection, key } = parseItemKey(itemKey, mapProps);
                 const doc = con.get(collection, key);
                 writeOrCreate(doc, value);
             }
@@ -113,7 +117,7 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
         return defCon.promise.then((con: Connection) => {
             doWork(con);
         });
-    }, []);
+    }, [mapProps]);
 
     const listen = useCallback(({ updateItem, updateAllKnownItems}: any) => {
         updateItemRef.current = updateItem;

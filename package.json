@@ -1,6 +1,6 @@
 {
   "name": "recoil-sharedb",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "recoil sharedb",
   "main": "lib/index.js",
   "scripts": {
@@ -18,10 +18,10 @@
   },
   "homepage": "https://github.com/Qquanwei/recoil-sharedb#readme",
   "peerDependencies": {
-    "@types/react": "^18.0.21",
+    "@types/react": ">=16.13.1",
     "@types/recoil": "^0.0.9",
     "@types/sharedb": "^3.2.0",
-    "react": "^18.2.0",
+    "react": ">=16.13.1",
     "recoil": "^0.7.5",
     "recoil-sync": "^0.1.1",
     "sharedb": "^3.2.0"

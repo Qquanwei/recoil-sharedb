@@ -1,4 +1,5 @@
 import { Doc } from 'sharedb/lib/client';
+import { DefaultValue } from 'recoil';
 import * as json1 from 'ot-json1';
 import config from './config';
 
@@ -9,12 +10,17 @@ export function readDoc(doc: Doc) {
         return doc.data;
     }
     return new Promise((resolve, reject) => {
-        doc.subscribe((error: any) => {
+        doc.fetch((error: any) => {
             if (error) {
+                console.error(error);
                 reject(error);
             } else {
-                liveDocs.set(doc, true);
-                resolve(doc.data || []);
+                if (doc.type) {
+                    liveDocs.set(doc, true);
+                    resolve(doc.data);
+                } else {
+                    resolve(new DefaultValue());
+                }
             }
         });
     });
@@ -22,6 +28,10 @@ export function readDoc(doc: Doc) {
 
 export function writeOrCreate<T>(doc: Doc, value: T) {
     if (!doc.type && !liveDocs.get(doc)) {
+        if (value instanceof DefaultValue) {
+            return;
+        }
+
         doc.create(value, config.otName, ((error: any) => {
             if (error) {
                 console.error('->', error);

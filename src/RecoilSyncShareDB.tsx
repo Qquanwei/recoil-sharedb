@@ -14,13 +14,15 @@ import config from './config';
 
 Client.types.register(json1.type);
 
+export const MapPropsProvider = React.createContext({});
+
 interface IRecoilSyncShareDBProps {
     wsUrl: string;
     children: JSX.Element;
     onError: (e: any) => void;
 };
 
-export const Context = React.createContext({});
+export const Context = React.createContext<any>({});
 
 const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
     children,
@@ -130,11 +132,13 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
             read={read}
             write={write}
             listen={listen}>
-            <Context.Provider value={connectionRef}>
-                <Suspense>
-                    { children }
-                </Suspense>
-            </Context.Provider>
+            <MapPropsProvider.Provider value={mapProps}>
+                <Context.Provider value={connectionRef}>
+                    <Suspense>
+                        { children }
+                    </Suspense>
+                </Context.Provider>
+            </MapPropsProvider.Provider>
         </RecoilSync>
     );
 });

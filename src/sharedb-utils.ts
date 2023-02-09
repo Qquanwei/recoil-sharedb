@@ -100,11 +100,18 @@ export function diffToPath(src: any, modify: any, checkMap = new Map()) {
 
     // 类型变更时直接替换
     if (
-        (Array.isArray(src) && !Array.isArray(modify))
-            || (!Array.isArray(src) && Array.isArray(modify))
+        (Array.isArray(src) && !Array.isArray(modify)) || (!Array.isArray(src) && Array.isArray(modify))
     ) {
         return [];
     }
+
+    // 数组有时候会整体替换
+    if (Array.isArray(src) && Array.isArray(modify)) {
+        if (modify.length === 0) {
+            return [];
+        }
+    }
+
 
     checkMap.set(src, true);
     checkMap.set(modify, true);

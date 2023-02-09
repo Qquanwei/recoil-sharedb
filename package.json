@@ -1,6 +1,6 @@
 {
   "name": "recoil-sharedb",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "recoil sharedb",
   "main": "lib/index.js",
   "scripts": {

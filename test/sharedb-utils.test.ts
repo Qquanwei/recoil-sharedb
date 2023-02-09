@@ -52,6 +52,15 @@ describe('diffToPath', () => {
                 [4]
             ]);
         });
+
+        it ('case7', () => {
+            expect(diffToPath(
+                { key: [2, 1, 8, 7, 9] },
+                { key: [] }
+            )).toEqual([
+                [ 'key' ],
+            ]);
+        });
     });
 
     describe('Object', () => {

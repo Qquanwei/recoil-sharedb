@@ -85,7 +85,6 @@ export function diffToPath(src: any, modify: any, checkMap = new Map()) {
     if (src === modify) {
         return null;
     }
-
     if (typeof src !== 'object' && typeof modify !== 'object') {
         return [];
     }
@@ -97,6 +96,14 @@ export function diffToPath(src: any, modify: any, checkMap = new Map()) {
 
     if (checkMap.has(src) || checkMap.has(modify)) {
         throw new Error('diffToPath 存在循环引用');
+    }
+
+    // 类型变更时直接替换
+    if (
+        (Array.isArray(src) && !Array.isArray(modify))
+            || (!Array.isArray(src) && Array.isArray(modify))
+    ) {
+        return [];
     }
 
     checkMap.set(src, true);

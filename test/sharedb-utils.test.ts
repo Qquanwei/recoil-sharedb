@@ -34,10 +34,22 @@ describe('diffToPath', () => {
             ]);
         });
 
-        it ('嵌套 case4 sort', () => {
+        it ('嵌套 case5 sort', () => {
             expect(diffToPath({ key: [2, 1]}, { key: [1, 2]})).toEqual([
                 ['key', 0],
                 ['key', 1]
+            ]);
+        });
+
+        it ('case6', () => {
+            expect(diffToPath(
+                [2, 1, 8, 7, 9],
+                [1, 2, 9, 7, 8]
+            )).toEqual([
+                [0],
+                [1],
+                [2],
+                [4]
             ]);
         });
     });
@@ -48,6 +60,12 @@ describe('diffToPath', () => {
                 ['kbar'],
                 ['kfoo']
             ]);
+        })
+    })
+
+    describe('Type change', () => {
+        it ('case1', () => {
+            expect(diffToPath([1], { 0: 1})).toEqual([]);
         })
     })
 })

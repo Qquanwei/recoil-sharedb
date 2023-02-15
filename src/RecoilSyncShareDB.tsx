@@ -69,12 +69,12 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
         socket.addEventListener('open', () => {
             if (connectionRef.current) {
                 // 重新订阅
-                (connectionRef.current as any).bindToSocket(socket);
                 Object.keys((connectionRef.current as any).collections).forEach(key => {
                     Object.keys((connectionRef.current as any).collections[key]).forEach(docId => {
                         (connectionRef.current as any).collections[key][docId].subscribe();
                     });
-                })
+                });
+                (connectionRef.current as any).bindToSocket(socket);
             } else {
                 connectionRef.current = new Connection(socket);
                 defCon.resolve(connectionRef.current);
@@ -84,9 +84,6 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
                 });
                 connectionRef.current.on('connection error', (error) => {
                     console.error('connection error', error);
-                });
-                connectionRef.current.on('state', (error) => {
-                    console.error('state', error);
                 });
             }
         });

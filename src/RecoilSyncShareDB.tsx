@@ -74,7 +74,6 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
                         (connectionRef.current as any).collections[key][docId].subscribe();
                     });
                 });
-                (connectionRef.current as any).bindToSocket(socket);
             } else {
                 connectionRef.current = new Connection(socket);
                 defCon.resolve(connectionRef.current);

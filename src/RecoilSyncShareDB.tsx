@@ -67,18 +67,35 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
         const socket = new WebSocket(wsUrl);
 
         socket.addEventListener('open', () => {
-            connectionRef.current = new Connection(socket);
-            defCon.resolve(connectionRef.current);
+            if (connectionRef.current) {
+                // 重新订阅
+                (connectionRef.current as any).bindToSocket(socket);
+                Object.keys((connectionRef.current as any).collections).forEach(key => {
+                    Object.keys((connectionRef.current as any).collections[key]).forEach(docId => {
+                        (connectionRef.current as any).collections[key][docId].subscribe();
+                    });
+                })
+            } else {
+                connectionRef.current = new Connection(socket);
+                defCon.resolve(connectionRef.current);
+
+                connectionRef.current.on('error', (error) => {
+                    console.error('error', error);
+                });
+                connectionRef.current.on('connection error', (error) => {
+                    console.error('connection error', error);
+                });
+                connectionRef.current.on('state', (error) => {
+                    console.error('state', error);
+                });
+            }
         });
 
-        // RecoilSync 会在第一次时触发一次 write, 我们不希望这样，所以第一次write可以忽略
-        isTimeRef.current = true;
-
         return () => {
-            isTimeRef.current = false;
             socket.close();
             if (connectionRef.current) {
                 connectionRef.current.close();
+                connectionRef.current = null;
             }
         }
     }, []);
@@ -101,10 +118,6 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
     }, [mapProps]);
 
     const write = useCallback(({ diff }: any) => {
-        if (!isTimeRef.current) {
-            return;
-        }
-
         function doWork(con: Connection) {
             for (const [itemKey, value] of diff) {
                 const { collection, key } = parseItemKey(itemKey, mapProps);

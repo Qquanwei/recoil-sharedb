@@ -3,8 +3,6 @@ import { DefaultValue } from 'recoil';
 import * as json1 from 'ot-json1';
 import config from './config';
 
-const liveDocs = new Map();
-
 export function readDoc(doc: Doc) {
     if (doc.type) {
         return doc.data;
@@ -16,7 +14,6 @@ export function readDoc(doc: Doc) {
                 reject(error);
             } else {
                 if (doc.type) {
-                    liveDocs.set(doc, true);
                     resolve(doc.data);
                 } else {
                     resolve(new DefaultValue());
@@ -27,16 +24,14 @@ export function readDoc(doc: Doc) {
 }
 
 export function writeOrCreate<T>(doc: Doc, value: T) {
-    if (!doc.type && !liveDocs.get(doc)) {
-        if (value instanceof DefaultValue) {
-            return;
-        }
+    if (value instanceof DefaultValue) {
+        return;
+    }
 
+    if (!doc.type) {
         doc.create(value, config.otName, ((error: any) => {
             if (error) {
                 console.error('->', error);
-            } else {
-                liveDocs.set(doc, true);
             }
         }));
     } else {

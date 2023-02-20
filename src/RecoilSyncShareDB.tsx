@@ -43,6 +43,7 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
 
     const listenNewDoc = useCallback((doc: Doc) => {
         doc.subscribe();
+
         doc.on('op', (op) => {
             const k = atomKeyMap.get(`${doc.collection}.${doc.id}`);
             if (updateItemRef.current && k) {
@@ -51,6 +52,8 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
         });
 
         doc.on('error', (e) => {
+            doc.removeAllListeners('op');
+            doc.removeAllListeners('error');
             if (onErrorRef.current) {
                 onErrorRef.current(e);
             } else {

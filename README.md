@@ -61,7 +61,7 @@ server.listen({
 
 启动服务之后，在React工程内开启同步，仅仅需要下面的代码
 
-```
+```js
 import { RecoilRoot, atom, useRecoilState } from 'recoil';
 import { RecoilSyncShareDB, effect } from 'recoil-sharedb';
 import * as refine from '@recoiljs/refine';
@@ -102,6 +102,9 @@ export default App;
 ```
 
 之后，就可以在不同设备之间进行同步了。应用层屏蔽了底层细节。
+
+![screen2](https://user-images.githubusercontent.com/9263655/220231953-37b9e12e-3777-40d9-b89f-1174b10a6a15.gif)
+
 
 在这背后，recoil-sharedb 内部会有一个diff算法， 会将一个大对象，diff成对应的ot修改，这样即使编辑同样一个对象的不同字段，也不会发生冲突。如果两个设备同时编辑一个字段（由于网络非常快，所以这种情况很少发生，但在离线同步时会比较常见），此时会产生合并冲突，RecoilSyncShareDB 提供了一个 onError 回调，需要根据此回调提醒用户刷新应用。
 

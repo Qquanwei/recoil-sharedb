@@ -42,8 +42,6 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
     onErrorRef.current = onError;
 
     const listenNewDoc = useCallback((doc: Doc) => {
-        doc.subscribe();
-
         doc.on('op', (op) => {
             const k = atomKeyMap.get(`${doc.collection}.${doc.id}`);
             if (updateItemRef.current && k) {
@@ -105,8 +103,7 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
 
         const readWork = (con: Connection) => {
             const doc = con.get(collection, key);
-            listenNewDoc(doc);
-            return readDoc(doc);
+            return readDoc(doc, listenNewDoc);
         }
 
         if (connectionRef.current) {

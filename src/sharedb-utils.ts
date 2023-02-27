@@ -3,12 +3,12 @@ import { DefaultValue } from 'recoil';
 import * as json1 from 'ot-json1';
 import config from './config';
 
-export function readDoc(doc: Doc) {
+export function readDoc(doc: Doc, callback: ((a: Doc) => void)) {
     if (doc.type) {
         return doc.data;
     }
     return new Promise((resolve, reject) => {
-        doc.fetch((error: any) => {
+        doc.subscribe((error: any) => {
             if (error) {
                 console.error(error);
                 reject(error);
@@ -17,6 +17,9 @@ export function readDoc(doc: Doc) {
                     resolve(doc.data);
                 } else {
                     resolve(new DefaultValue());
+                }
+                if (callback) {
+                    callback(doc);
                 }
             }
         });

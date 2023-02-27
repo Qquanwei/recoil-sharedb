@@ -102,6 +102,10 @@ export function diffToPath(src: any, modify: any, checkMap = new Map()) {
 
     // 数组有时候会整体替换
     if (Array.isArray(src) && Array.isArray(modify)) {
+        if (src.length === 0 && modify.length === 0) {
+            return null;
+        }
+
         if (modify.length === 0) {
             return [];
         }

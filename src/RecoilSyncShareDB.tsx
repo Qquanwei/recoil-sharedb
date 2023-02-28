@@ -45,7 +45,13 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
         doc.on('op', (op) => {
             const k = atomKeyMap.get(`${doc.collection}.${doc.id}`);
             if (updateItemRef.current && k) {
-                (updateItemRef.current as any)(k, doc.data);
+                // recoil-sync 有个bug，会导致updateItemRef触发write
+                // 当两个连续的更新到达时触发
+                // FIXME 需要给上游提交bugfix
+                // setTimeout 为临时解决方案
+                setTimeout(() => {
+                    (updateItemRef.current as any)(k, doc.data);
+                });
             }
         });
 

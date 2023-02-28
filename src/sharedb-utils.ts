@@ -5,6 +5,9 @@ import config from './config';
 
 export function readDoc(doc: Doc, callback: ((a: Doc) => void)) {
     if (doc.type) {
+        if (callback) {
+            callback(doc);
+        }
         return doc.data;
     }
     return new Promise((resolve, reject) => {

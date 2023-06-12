@@ -29,7 +29,7 @@ export function readDoc(doc: Doc, callback: ((a: Doc) => void)) {
     });
 }
 
-export function writeOrCreate<T>(doc: Doc, value: T) {
+export function writeOrCreate<T extends Record<string, any>>(doc: Doc, value: T) {
     if (value instanceof DefaultValue) {
         return;
     }

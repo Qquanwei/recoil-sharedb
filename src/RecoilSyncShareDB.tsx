@@ -1,8 +1,7 @@
 import React, {
     useMemo,
     Suspense,
-    useCallback, useEffect, useImperativeHandle, useRef } from 'react';
-import { useRecoilSnapshot } from 'recoil';
+    useCallback, useEffect, useRef } from 'react';
 import { RecoilSync } from 'recoil-sync';
 import WebSocket from 'reconnecting-websocket';
 import Client, { Connection, Doc } from 'sharedb/lib/client';
@@ -24,12 +23,12 @@ interface IRecoilSyncShareDBProps {
 
 export const Context = React.createContext<any>({});
 
-const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
+const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = ({
     children,
     wsUrl,
     onError,
     ...mapProps
-}, forwardRef) => {
+}) => {
     const connectionRef = useRef<Connection|null>(null);
     const updateItemRef = useRef(null);
     const updateAllKnownItemsRef = useRef(null);
@@ -156,7 +155,7 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = React.forwardRef(({
             </MapPropsProvider.Provider>
         </RecoilSync>
     );
-});
+};
 
 export {
     RecoilSyncShareDB

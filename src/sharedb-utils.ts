@@ -10,6 +10,13 @@ export function readDoc(doc: Doc, callback: ((a: Doc) => void)) {
         }
         return doc.data;
     }
+    // 如果无type, 有data, 说明此次提交在Pending中，也就是本地已有数据，但还未提交。
+    // 读取时，从本地读取，后台异步更新
+    if (doc.data) {
+        doc.subscribe();
+        return doc.data;
+    } 
+    // 如果都为空，则从远端拉取
     return new Promise((resolve, reject) => {
         doc.subscribe((error: any) => {
             if (error) {

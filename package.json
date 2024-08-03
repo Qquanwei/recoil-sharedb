@@ -1,6 +1,6 @@
 {
   "name": "recoil-sharedb",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "recoil sharedb",
   "main": "lib/index.js",
   "scripts": {
@@ -41,7 +41,8 @@
     "recoil": "^0.7.5",
     "recoil-sync": "^0.1.1",
     "semver": "^7.3.8",
-    "sharedb": "^4.0.0"
+    "sharedb": "^4.0.0",
+    "typescript": "^5.5.4"
   },
   "dependencies": {
     "reconnecting-websocket": "^4.4.0"

@@ -32,7 +32,6 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = ({
     const connectionRef = useRef<Connection|null>(null);
     const updateItemRef = useRef(null);
     const updateAllKnownItemsRef = useRef(null);
-    const isTimeRef = useRef(false);
     const onErrorRef = useRef<Function|null>(null);
     const atomKeyMap = useMemo(() => {
         return new Map();
@@ -103,7 +102,7 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = ({
     }, []);
 
     const read = useCallback((itemKey: string) => {
-        const { collection, key, ...props } = parseItemKey(itemKey, mapProps);
+        const { collection, key } = parseItemKey(itemKey, mapProps);
         atomKeyMap.set(`${collection}.${key}`, itemKey);
 
         const readWork = (con: Connection) => {

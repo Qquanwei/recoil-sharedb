@@ -36,26 +36,30 @@ const RecoilSyncShareDB: React.FC<IRecoilSyncShareDBProps> = ({
     const atomKeyMap = useMemo(() => {
         return new Map();
     }, []);
+    const registerMap = useMemo(() => {
+        return new Map();
+    }, []);
 
     onErrorRef.current = onError;
 
     const listenNewDoc = useCallback((doc: Doc) => {
+        if (registerMap.get(doc)) {
+            return;
+        }
+        registerMap.set(doc, true);
+
         doc.on('op', (op) => {
+            // 这里表示 sharedb 数据修改完成，此时需要将数据从sharedb同步到recoil中。
             const k = atomKeyMap.get(`${doc.collection}.${doc.id}`);
             if (updateItemRef.current && k) {
-                // recoil-sync 有个bug，会导致updateItemRef触发write
-                // 当两个连续的更新到达时触发
-                // FIXME 需要给上游提交bugfix
-                // setTimeout 为临时解决方案
-                setTimeout(() => {
-                    (updateItemRef.current as any)(k, doc.data);
-                });
+                (updateItemRef.current as any)(k, doc.data);
             }
         });
 
         doc.on('error', (e) => {
             doc.removeAllListeners('op');
             doc.removeAllListeners('error');
+            registerMap.delete(doc);
             if (onErrorRef.current) {
                 onErrorRef.current(e);
             } else {
